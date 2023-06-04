@@ -7,29 +7,78 @@ int totalProcessos, burstCPU, totalIO;
 
 void gantt(int tempo_escalonador, vector<pair<int, pair<int, int>>> historico)
 {
-    for (int i = 0; i < historico.size(); i++)
+    vector<pair<string, int>> diagGantt;
+
+    // preencher o diagrama de gantt com as tarefas e períodos vazios
+    int lastEnd = 0;
+    for (const auto& processo : historico)
     {
-        if (i)
+        int id = processo.first;
+        int inicio = processo.second.first;
+        int fim = processo.second.second;
+
+        if (inicio > lastEnd)
         {
-            if (historico[i].second.first != historico[i - 1].second.second)
-            {
-                cout << "Nenhum Processo: " << historico[i - 1].second.second << " " << historico[i].second.first << "\n";
-            }
+            diagGantt.push_back(make_pair("Nenhum Processo", lastEnd));
+            diagGantt.push_back(make_pair("", inicio));
         }
-        else
-        {
-            if (historico[i].second.first != 0)
-            {
-                cout << "Nenhum Processo: " << 0 << " " << historico[i].second.first << "\n";
-            }
-        }
-        cout << "P" << historico[i].first << ": " << historico[i].second.first << " " << historico[i].second.second << "\n";
+
+        diagGantt.push_back(make_pair("P" + to_string(id), inicio));
+        diagGantt.push_back(make_pair("[" + to_string(inicio) + "-" + to_string(fim) + "]", fim));
+
+        lastEnd = fim;
     }
-    if (historico.size() && historico.back().second.second != tempo_escalonador)
+
+    // Adicionar a última parte do diagrama de Gantt se necessário
+    if (lastEnd < tempo_escalonador)
     {
-        cout << "Nenhum Processo: " << historico.back().second.second << " " << tempo_escalonador << "\n";
+        diagGantt.push_back(make_pair("Nenhum Processo", lastEnd));
+        diagGantt.push_back(make_pair("", tempo_escalonador));
     }
-    cout << "\n";
+
+    // Exibir o diagrama de Gantt
+    cout << "Diagrama de Gantt:\n";
+
+    int i = 0;
+    while (i < diagGantt.size())
+    {
+        string nome = diagGantt[i].first;
+        int inicio = diagGantt[i].second;
+        int fim = diagGantt[i + 1].second;
+
+        cout << "+";
+        for (int j = 0; j < fim - inicio; ++j)
+        {
+            cout << "-";
+        }
+        cout << "+\n";
+
+        cout << "|" << nome;
+        int padding = fim - inicio - nome.length();
+        for (int j = 0; j < padding; ++j)
+        {
+            cout << " ";
+        }
+        cout << "|\n";
+
+        cout << "|" << diagGantt[i + 1].first;
+        padding = fim - inicio - diagGantt[i + 1].first.length();
+        for (int j = 0; j < padding; ++j)
+        {
+            cout << " ";
+        }
+        cout << "|\n";
+
+        ++i;
+        ++i;
+    }
+
+    cout << "+";
+    for (int j = 0; j < tempo_escalonador; ++j)
+    {
+        cout << "-";
+    }
+    cout << "+\n\n";
 }
 
 int main()

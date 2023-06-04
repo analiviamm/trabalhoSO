@@ -1,11 +1,7 @@
 #include <bits/stdc++.h>
 #include "Fila.cpp"
 
-// class EscalonadorIO {
-//     private:
-//         Fila filaIO;
-// };
-
+using namespace std;
 class Escalonador
 {
 private:
@@ -16,20 +12,17 @@ private:
 
 public:
     vector<pair<int, pair<int, int>>> CPU, IO;
-    Escalonador() : tempo_atual(0)
-    {
-        filas.push_back(Fila(10)); // maior prioridade
-        filas.push_back(Fila(15)); // prioridade media
-        filas.push_back(Fila());   // menor prioridade
-        EscalonadorIO = Fila();
-    }
+
+    Escalonador() : tempo_atual(0), filas({Fila(10), Fila(15), Fila()}), EscalonadorIO(Fila()) {}
+
     void set_tempo_atual(int tempo_atual)
     {
         this->tempo_atual = tempo_atual;
     }
+
     int get_tempo_atual()
     {
-        return this->tempo_atual;
+        return tempo_atual;
     }
 
     void adicionar(Processo novo)
@@ -56,10 +49,10 @@ public:
     {
         for (int i = 0; i < 3; i++)
         {
-            if (filas[i].get_tamanho_fila() != 0)
+            if (!filas[i].empty()) 
             {
                 int limiteIO = 0;
-                if (EscalonadorIO.get_tamanho_fila() != 0)
+                if (!EscalonadorIO.empty()) 
                 {
                     limiteIO = EscalonadorIO.processo_atual().get_burst();
                 }
@@ -72,7 +65,7 @@ public:
 
                 executar_ultimaIO(tempo_percorrido);
 
-                if (atual.get_mudar_de_fila() == true)
+                if (atual.get_mudar_de_fila())
                 {
                     filas[i].remover();
                     atual.set_quantumatual(filas[i + 1].get_quantum());
@@ -112,7 +105,7 @@ public:
 
     void executar_ultimaIO(int limite)
     {
-        while ((limite) && (EscalonadorIO.get_tamanho_fila() != 0))
+        while (limite > 0 && !EscalonadorIO.empty())
         {
             int tempo_percorrido = EscalonadorIO.executar_processoTLE(limite);
             Processo atual = EscalonadorIO.processo_atual();
@@ -123,17 +116,17 @@ public:
 
             if (atual.get_burst() == 0)
                 colocar_na_fila(atual);
-            limite = limite - tempo_percorrido;
+            limite -= tempo_percorrido;
         }
     }
 
     bool checar_filas()
     {
-        bool check = EscalonadorIO.get_tamanho_fila() != 0 ? true : false;
+        bool check = !EscalonadorIO.empty(); 
 
         for (int i = 0; i < 3; i++)
         {
-            check = check | (filas[i].get_tamanho_fila() != 0 ? true : false);
+            check = check || !filas[i].empty(); 
         }
 
         return check;
