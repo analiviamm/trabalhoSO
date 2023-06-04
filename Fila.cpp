@@ -2,6 +2,8 @@
 #include <iostream>
 #include "Processo.cpp"
 
+using namespace std;
+
 class Fila
 {
 private:
@@ -37,6 +39,10 @@ public:
     {
         Processo atual = this->fila_de_processo.front();
         return atual;
+    }
+
+    bool empty() const {
+        return fila_de_processo.empty();
     }
 
     int executar_processoTLE(int tle)
@@ -90,6 +96,7 @@ public:
         fila_de_processo.front().set_burst(0);
         return tempo_percorrido;
     }
+
 };
 
 class FilaFCFS : public Fila
