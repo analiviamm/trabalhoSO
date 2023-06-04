@@ -105,7 +105,7 @@ int main()
             tempo = e.executarIO();
         e.set_tempo_atual(e.get_tempo_atual() + tempo);
     }
-    cout << "Historico da CPU: \n";
+
     gantt(e.get_tempo_atual(), e.CPU);
 
     return 0;
